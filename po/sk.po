@@ -2,13 +2,13 @@
 # Copyright (C) 2002, 2003, 2004 Free Software Foundation, Inc.
 # Marcel Telka <marcel@telka.sk>, 2002, 2003, 2004.
 #
-# $Id: sk.po,v 1.66 2004/08/30 14:38:12 andersca Exp $
+# $Id: sk.po,v 1.67 2004/09/13 16:46:45 andersca Exp $
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: libgnomeui\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-08-30 16:28+0200\n"
+"POT-Creation-Date: 2004-09-13 18:30+0200\n"
 "PO-Revision-Date: 2004-08-07 17:17+0200\n"
 "Last-Translator: Marcel Telka <marcel@telka.sk>\n"
 "Language-Team: Slovak <sk-i18n@lists.linux.sk>\n"
@@ -32,16 +32,16 @@ msgstr "Detská položka 2"
 msgid "Hint for item 2"
 msgstr "Rada pre položku 2"
 
-#: file-chooser/gtkfilesystemgnomevfs.c:653
+#: file-chooser/gtkfilesystemgnomevfs.c:668
 #, c-format
 msgid "%s is not a folder"
 msgstr "%s nie je priečinok"
 
-#: file-chooser/gtkfilesystemgnomevfs.c:860
+#: file-chooser/gtkfilesystemgnomevfs.c:875
 msgid "Filesystem"
 msgstr "Súborový systém"
 
-#: file-chooser/gtkfilesystemgnomevfs.c:1524
+#: file-chooser/gtkfilesystemgnomevfs.c:1539
 #, c-format
 msgid "Bookmark saving failed (%s)"
 msgstr "Ukladanie záložky zlyhalo (%s)"

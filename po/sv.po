@@ -3,13 +3,13 @@
 # Christian Rose <menthos@menthos.com>, 2001, 2002.
 # Mikael Hallendal <micke@codefactory.se>, 2002.
 #
-# $Id: sv.po,v 1.37 2002/07/21 15:03:40 menthos Exp $
+# $Id: sv.po,v 1.38 2002/07/30 08:48:17 menthos Exp $
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: libgnomeui\n"
-"POT-Creation-Date: 2002-07-21 17:04+0200\n"
-"PO-Revision-Date: 2002-07-21 17:05+0200\n"
+"POT-Creation-Date: 2002-07-30 10:46+0200\n"
+"PO-Revision-Date: 2002-07-30 10:46+0200\n"
 "Last-Translator: Christian Rose <menthos@menthos.com>\n"
 "Language-Team: Swedish <sv@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -1335,6 +1335,9 @@ msgstr "Avsluta testet"
 
 #~ msgid "_Contents"
 #~ msgstr "_Innehåll"
+
+#~ msgid "Contents"
+#~ msgstr "Innehåll"
 
 #~ msgid "Find _Again"
 #~ msgstr "Sök _igen"

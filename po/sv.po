@@ -3,13 +3,13 @@
 # Christian Rose <menthos@menthos.com>, 2001, 2002, 2003, 2004.
 # Mikael Hallendal <micke@codefactory.se>, 2002.
 #
-# $Id: sv.po,v 1.85 2005/03/01 14:54:33 kmaraas Exp $
+# $Id: sv.po,v 1.86 2005/03/07 14:03:45 andersca Exp $
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: libgnomeui\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-03-01 15:43+0100\n"
+"POT-Creation-Date: 2005-03-07 14:54+0100\n"
 "PO-Revision-Date: 2004-07-24 11:33+0200\n"
 "Last-Translator: Christian Rose <menthos@menthos.com>\n"
 "Language-Team: Swedish <sv@li.org>\n"

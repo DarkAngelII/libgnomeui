@@ -2,13 +2,13 @@
 # Copyright (C) 2002, 2003, 2004, 2005 Free Software Foundation, Inc.
 # Marcel Telka <marcel@telka.sk>, 2002, 2003, 2004, 2005.
 #
-# $Id: sk.po,v 1.77 2006/01/16 17:31:50 csaavedr Exp $
+# $Id: sk.po,v 1.78 2006/01/26 18:34:15 kmaraas Exp $
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: libgnomeui\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-01-16 18:01+0100\n"
+"POT-Creation-Date: 2006-01-26 15:43+0100\n"
 "PO-Revision-Date: 2005-10-17 06:37+0200\n"
 "Last-Translator: Marcel Telka <marcel@telka.sk>\n"
 "Language-Team: Slovak <sk-i18n@lists.linux.sk>\n"

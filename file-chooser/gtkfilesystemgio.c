@@ -749,7 +749,6 @@ enumerate_children_callback (GObject      *source_object,
 			     GAsyncResult *result,
 			     gpointer      user_data)
 {
-  GtkFileSystemGio *file_system;
   GtkFileSystemHandleGio *handle;
   GtkFileFolderGio *folder = NULL;
   GFileEnumerator *enumerator;
@@ -758,40 +757,50 @@ enumerate_children_callback (GObject      *source_object,
 
   file = G_FILE (source_object);
   handle = GTK_FILE_SYSTEM_HANDLE_GIO (user_data);
-  file_system = GTK_FILE_SYSTEM_GIO (GTK_FILE_SYSTEM_HANDLE (handle)->file_system);
   enumerator = g_file_enumerate_children_finish (file, result, &error);
 
   if (enumerator)
     {
-      folder = g_object_new (GTK_TYPE_FILE_FOLDER_GIO, NULL);
-      folder->cancellable = g_object_ref (file_system->cancellable);
-      folder->parent_file = g_object_ref (file);
-      folder->children = g_hash_table_new_full (g_str_hash, g_str_equal,
-						(GDestroyNotify) g_free,
-						(GDestroyNotify) g_object_unref);
-      folder->finished_loading = FALSE;
+      if (!GTK_FILE_SYSTEM_HANDLE (handle)->cancelled)
+	{
+	  GtkFileSystemGio *file_system;
 
-      folder->directory_monitor = g_file_monitor_directory (file, G_FILE_MONITOR_NONE, NULL, &error);
+	  file_system = GTK_FILE_SYSTEM_GIO (GTK_FILE_SYSTEM_HANDLE (handle)->file_system);
 
-      if (error)
-	g_warning (error->message);
-      else
-	g_signal_connect (folder->directory_monitor, "changed",
-			  G_CALLBACK (directory_monitor_changed), folder);
+	  folder = g_object_new (GTK_TYPE_FILE_FOLDER_GIO, NULL);
+	  folder->cancellable = g_object_ref (file_system->cancellable);
+	  folder->parent_file = g_object_ref (file);
+	  folder->children = g_hash_table_new_full (g_str_hash, g_str_equal,
+						    (GDestroyNotify) g_free,
+						    (GDestroyNotify) g_object_unref);
+	  folder->finished_loading = FALSE;
 
-      g_file_enumerator_next_files_async (enumerator, FILES_PER_QUERY,
-					  G_PRIORITY_DEFAULT,
-					  folder->cancellable,
-					  enumerator_files_callback,
-					  g_object_ref (folder));
+	  folder->directory_monitor = g_file_monitor_directory (file, G_FILE_MONITOR_NONE, NULL, &error);
+
+	  if (error)
+	    g_warning (error->message);
+	  else
+	    g_signal_connect (folder->directory_monitor, "changed",
+			      G_CALLBACK (directory_monitor_changed), folder);
+
+	  g_file_enumerator_next_files_async (enumerator, FILES_PER_QUERY,
+					      G_PRIORITY_DEFAULT,
+					      folder->cancellable,
+					      enumerator_files_callback,
+					      g_object_ref (folder));
+	}
+
       g_object_unref (enumerator);
     }
 
   gdk_threads_enter ();
   ((GtkFileSystemGetFolderCallback) handle->callback) (GTK_FILE_SYSTEM_HANDLE (handle),
-						       GTK_FILE_FOLDER (folder),
+						       folder ? GTK_FILE_FOLDER (folder) : NULL,
 						       error, handle->data);
   gdk_threads_leave ();
+
+  if (error)
+    g_error_free (error);
 }
 
 static GtkFileSystemHandle *
@@ -971,6 +980,9 @@ mount_async_callback (GObject      *source_object,
       ((GtkFileSystemGetInfoCallback) handle->callback) (GTK_FILE_SYSTEM_HANDLE (handle),
 							 NULL, error, handle->data);
       gdk_threads_leave ();
+
+      if (error)
+	g_error_free (error);
     }
 }
 
@@ -991,13 +1003,17 @@ query_info_callback (GObject      *source_object,
   handle = GTK_FILE_SYSTEM_HANDLE_GIO (user_data);
   file_info = g_file_query_info_finish (file, result, &error);
 
+  if (GTK_FILE_SYSTEM_HANDLE (handle)->cancelled)
+    goto out;
+
   if (file_info)
     {
       info = translate_file_info (file, file_info);
-      g_object_unref (file_info);
     }
   else if (g_error_matches (error, G_IO_ERROR, G_IO_ERROR_NOT_MOUNTED) && !handle->tried_mount)
     {
+      g_assert (!GTK_FILE_SYSTEM_HANDLE (handle)->cancelled);
+
       /* If it's not mounted, try to mount it ourselves */
       g_error_free (error);
       handle->tried_mount = TRUE;
@@ -1008,13 +1024,21 @@ query_info_callback (GObject      *source_object,
       return;
     }
 
+ out:
+
   gdk_threads_enter ();
   ((GtkFileSystemGetInfoCallback) handle->callback) (GTK_FILE_SYSTEM_HANDLE (handle),
 						     info, error, handle->data);
   gdk_threads_leave ();
 
+  if (error)
+    g_error_free (error);
+
   if (info)
     gtk_file_info_free (info);
+
+  if (file_info)
+    g_object_unref (file_info);
 }
 
 static GtkFileSystemHandle *

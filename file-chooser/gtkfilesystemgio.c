@@ -1113,6 +1113,7 @@ gtk_file_system_gio_cancel_operation (GtkFileSystemHandle *handle)
       g_cancellable_cancel (handle_gio->cancellable);
       g_object_unref (handle_gio->cancellable);
       handle_gio->cancellable = NULL;
+      handle->cancelled = TRUE;
     }
 
   if (handle_gio->source_id)
@@ -1120,6 +1121,12 @@ gtk_file_system_gio_cancel_operation (GtkFileSystemHandle *handle)
       /* This is only for functions without async option */
       g_source_remove (handle_gio->source_id);
       handle_gio->source_id = 0;
+      handle->cancelled = TRUE;
+
+      /* FIXME: the user's callback *still* needs to be called so that we can
+       * notify it that the operation was cancelled.  However, by removing the
+       * idle handler as above, the callback won't get called!
+       */
     }
 }
 

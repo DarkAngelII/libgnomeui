@@ -1,3 +1,26 @@
+2008-06-03  Federico Mena Quintero  <federico@novell.com>
+
+	Fix https://bugzilla.novell.com/show_bug.cgi?id=396681 - crash
+	when an async callback gets called after the GtkFileSystemGio has
+	been freed.
+
+	* file-chooser/gtkfilesystemgio.c (new_handle): New function to
+	avoid duplicated code.
+	(gtk_file_system_gio_get_folder): Use new_handle().
+	(gtk_file_system_gio_get_info): Likewise.
+	(gtk_file_system_gio_create_folder): Likewise.
+	(gtk_file_system_gio_volume_mount): Likewise.
+	(gtk_file_system_gio_cancel_operation): Turn on the base
+	handle->cancelled.  The file chooser uses this flag from its own
+	callbacks.
+	(enumerate_children_callback): Don't try to access the handle's
+	file_system if the handle was cacelled (the file_system may have
+	been freed in that case).
+	(enumerate_children_callback): Free the GError.
+	(query_info_callback): Ensure we don't operate on a cancelled handle.
+	(query_info_callback): Free the GError.
+	(mount_async_callback): Free the GError.
+
 2008-05-28  Carlos Garnacho  <carlos@imendio.com>
 
 	* file-chooser/gtkfilesystemgio.c: Improve bookmarks handling by not

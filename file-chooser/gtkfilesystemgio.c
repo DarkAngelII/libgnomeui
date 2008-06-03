@@ -523,6 +523,22 @@ gtk_file_system_handle_gio_finalize (GObject *object)
   G_OBJECT_CLASS (gtk_file_system_handle_gio_parent_class)->finalize (object);
 }
 
+static GtkFileSystemHandleGio *
+new_handle (GtkFileSystem *file_system,
+	    gpointer callback,
+	    gpointer data)
+{
+  GtkFileSystemHandleGio *handle;
+
+  handle = g_object_new (GTK_TYPE_FILE_SYSTEM_HANDLE_GIO, NULL);
+  GTK_FILE_SYSTEM_HANDLE (handle)->file_system = file_system;
+  handle->cancellable = g_cancellable_new ();
+  handle->callback = callback;
+  handle->data = data;
+
+  return handle;
+}
+
 /* GtkFileSystem interface implementation */
 static void
 gtk_file_system_gio_iface_init (GtkFileSystemIface *iface)
@@ -794,11 +810,7 @@ gtk_file_system_gio_get_folder (GtkFileSystem                  *file_system,
 
   g_return_val_if_fail (file != NULL, NULL);
 
-  handle = g_object_new (GTK_TYPE_FILE_SYSTEM_HANDLE_GIO, NULL);
-  GTK_FILE_SYSTEM_HANDLE (handle)->file_system = file_system;
-  handle->cancellable = g_cancellable_new ();
-  handle->callback = callback;
-  handle->data = data;
+  handle = new_handle (file_system, callback, data);
 
   g_file_enumerate_children_async (file, "standard,time,thumbnail::*", 0, 0,
 				   handle->cancellable,
@@ -1021,11 +1033,7 @@ gtk_file_system_gio_get_info (GtkFileSystem                *file_system,
 
   g_return_val_if_fail (file != NULL, NULL);
 
-  handle = g_object_new (GTK_TYPE_FILE_SYSTEM_HANDLE_GIO, NULL);
-  GTK_FILE_SYSTEM_HANDLE (handle)->file_system = file_system;
-  handle->cancellable = g_cancellable_new ();
-  handle->callback = callback;
-  handle->data = data;
+  handle = new_handle (file_system, callback, data);
   handle->tried_mount = FALSE;
 
   g_file_query_info_async (file, "standard,time,thumbnail::*", 0, 0,
@@ -1080,11 +1088,7 @@ gtk_file_system_gio_create_folder (GtkFileSystem                     *file_syste
 
   /* FIXME: make_directory() doesn't seem to have async version */
 
-  handle = g_object_new (GTK_TYPE_FILE_SYSTEM_HANDLE_GIO, NULL);
-  GTK_FILE_SYSTEM_HANDLE (handle)->file_system = file_system;
-  handle->cancellable = g_cancellable_new ();
-  handle->callback = callback;
-  handle->data = data;
+  handle = new_handle (file_system, callback, data);
 
   idle_data = g_slice_new (CreateFolderData);
   idle_data->path = gtk_file_path_copy (path);
@@ -1256,11 +1260,7 @@ gtk_file_system_gio_volume_mount (GtkFileSystem                    *file_system,
 
   DEBUG ("volume_mount");
 
-  handle = g_object_new (GTK_TYPE_FILE_SYSTEM_HANDLE_GIO, NULL);
-  GTK_FILE_SYSTEM_HANDLE (handle)->file_system = file_system;
-  handle->cancellable = g_cancellable_new ();
-  handle->callback = callback;
-  handle->data = data;
+  handle = new_handle (file_system, callback, data);
 
   if (g_type_is_a (G_OBJECT_TYPE (file_system_volume), G_TYPE_DRIVE))
     {
